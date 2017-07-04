@@ -16,7 +16,7 @@ func main(){
 
 	telegram, err  := Telegram.NewTelegram(openAuthFile(os.Args[1]), os.Args[2], os.Args[3])
 	if err != nil{
-		log.Println(err)
+		log.Fatal(err)
 	}
 	telegram.Start()
 }
