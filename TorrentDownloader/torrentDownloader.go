@@ -67,7 +67,7 @@ func (torrentDownloader *TorrentDownloader) GetListOfTorrents() (result string) 
 
 	for i, torr := range torrents{
 
-		result += strconv.Itoa(i+1) + ") " + torr.GetName() + "   " + strconv.FormatFloat(torr.GetProgress(), 'f', 2, 64) + "%"
+		result += strconv.Itoa(i+1) + ") " + torr.GetName() + "   " + strconv.FormatFloat(torr.GetDownloadSpeed(), 'f', 2, 64) + "mb/s   " + strconv.FormatFloat(torr.GetProgress(), 'f', 2, 64) + "%"
 
 	}
 

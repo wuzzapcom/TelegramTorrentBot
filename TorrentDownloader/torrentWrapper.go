@@ -1,6 +1,9 @@
 package TorrentDownloader
 
-import "github.com/anacrolix/torrent"
+import (
+	"github.com/anacrolix/torrent"
+	"time"
+)
 
 type Torrent struct{
 
@@ -38,6 +41,21 @@ func (t *Torrent) GetProgress() float64{
 
 }
 
+func (t *Torrent) GetDownloadSpeed() float64{
+
+	startValue := t.t.BytesCompleted()
+
+	time.Sleep(time.Second / 10)
+
+	endValue := t.t.BytesCompleted()
+
+	delta := 10 * (endValue - startValue)
+
+	delta = delta / 1024
+
+	return  float64(delta) / 1024
+
+}
 
 
 func (t *Torrent) IsDownloaded() bool {

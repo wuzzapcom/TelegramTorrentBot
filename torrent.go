@@ -1,16 +1,20 @@
 package main
 
 import (
-	//"wuzzapcom/TelegramTorrentBot/TorrentDownloader"
-	//"fmt"
 	"wuzzapcom/TelegramTorrentBot/Telegram"
 	"log"
 	"io/ioutil"
+	"os"
+	"fmt"
 )
 
 func main(){
 
-	telegram, err  := Telegram.NewTelegram(openAuthFile("auth.token"), "/Users/wuzzapcom/", "/Users/wuzzapcom")
+	if len(os.Args) != 4 {
+		fmt.Println("You should provide path to auth file, path to folder with torrent files and path to folder with torrent data.")
+	}
+
+	telegram, err  := Telegram.NewTelegram(openAuthFile(os.Args[1]), os.Args[2], os.Args[3])
 	if err != nil{
 		log.Println(err)
 	}
@@ -32,35 +36,3 @@ func openAuthFile(pathToAuthFile string) string{
 	return string(data)
 
 }
-
-func testTorrent(){
-
-	//torrentDownloader, err := TorrentDownloader.NewTorrentDownloader()
-	//if err != nil{
-	//	fmt.Println(err)
-	//}
-	//
-	//torrents := torrentDownloader.GetTorrents()
-	//
-	//fmt.Println(len(torrents))
-	//
-	////for _, torr := range torrents{
-	////	fmt.Println(torr.GetProgress())
-	////}
-	//
-	////go torrentDownloader.DownloadTorrent("/Users/wuzzapcom/LinkinPark.torrent")
-	////
-	////for len(torrentDownloader.GetTorrents()) == 0 {}
-	////
-	////for /*len(torrentDownloader.GetTorrents()) == 0 || */!torrentDownloader.GetTorrents()[0].IsDownloaded(){
-	////
-	////	fmt.Println(torrentDownloader.GetTorrents()[0].GetProgress())
-	////
-	////}
-	//
-	//torrentDownloader.Close()
-
-}
-
-
-
