@@ -27,6 +27,7 @@ type Data struct{
 	SizeOfSource int64
 	DownloadDate int64
 	Name string
+	FileNames []string
 
 }
 
@@ -34,7 +35,8 @@ func InitFileManager(pathToData string) FileManager {
 
 	data, err := ioutil.ReadFile(pathToData + "/" + Constants.INFO_FILE_NAME)
 	if err != nil{
-		log.Panic(err)
+		log.Println(err)
+		return FileManager{pathToData:pathToData, loadedData: DataArray{Data:make([]Data, 0, 5)}}
 	}
 
 	var dataArray DataArray
@@ -63,7 +65,7 @@ func (fileManager *FileManager) Save() {
 		log.Println(err)
 	}
 
-	file, err := os.Open()
+	file, err := os.Create(fileManager.pathToData + "/" + Constants.INFO_FILE_NAME)
 	if err != nil{
 		log.Panic(err)
 	}
