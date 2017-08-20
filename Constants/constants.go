@@ -8,3 +8,14 @@ const FILE_DOWNLOADED_1 = "Торрент "
 const FILE_DOWNLOADED_2 = " скачался!"
 const TORRENT_STARTED = "Торрент начал скачиваться!"
 const BOT_OWNER_ID =  36187514
+
+const INFO_FILE_NAME = ".TelegramTorrentBotInfo"
+
+/*
+
+	1) Finish FileManager
+	2) Implement FileManager in main project
+	3) Don`t call DownloadAll function in TorrentDownloader, but download all files consistently(for convenient downloading tv series)
+	4) Send message to user about every downloaded file/episode (optional, user should set this as flag manually)
+
+ */
