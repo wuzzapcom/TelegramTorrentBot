@@ -14,6 +14,7 @@ const INFO_FILE_NAME = ".TelegramTorrentBotInfo"
 /*
 
 	1) Finish FileManager
+		* FileManager should show all subfiles, such as tv series episodes
 	2) Implement FileManager in main project
 	3) Don`t call DownloadAll function in TorrentDownloader, but download all files consistently(for convenient downloading tv series)
 	4) Send message to user about every downloaded file/episode (optional, user should set this as flag manually)
