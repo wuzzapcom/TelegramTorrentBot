@@ -1,31 +1,35 @@
 package Telegram
 
 import (
-	"github.com/Syfaro/telegram-bot-api"
-	"wuzzapcom/TelegramTorrentBot/TorrentDownloader"
+	"io"
 	"log"
 	"net/http"
 	"os"
-	"io"
-	"wuzzapcom/TelegramTorrentBot/Constants"
+	"strconv"
+	"strings"
 	"time"
+	"wuzzapcom/TelegramTorrentBot/Constants"
 	"wuzzapcom/TelegramTorrentBot/FileManager"
+	"wuzzapcom/TelegramTorrentBot/TorrentDownloader"
+
+	"github.com/Syfaro/telegram-bot-api"
 )
 
-type Telegram struct{
-	bot     *tgbotapi.BotAPI
-	updates <-chan tgbotapi.Update
+type Telegram struct {
+	bot               *tgbotapi.BotAPI
+	updates           <-chan tgbotapi.Update
 	torrentDownloader *TorrentDownloader.TorrentDownloader
-	torrentFilesPath string
+	torrentFilesPath  string
+	state             int
 }
 
-func NewTelegram(authToken string, torrentFilesPath string, torrentDataPath string) (telegram *Telegram, err error){
+func NewTelegram(authToken string, torrentFilesPath string, torrentDataPath string) (telegram *Telegram, err error) {
 
 	telegram = &Telegram{}
 
 	telegram.torrentDownloader, err = TorrentDownloader.NewTorrentDownloader(torrentDataPath)
 	if err != nil {
-		return  nil, err
+		return nil, err
 	}
 
 	telegram.bot, err = tgbotapi.NewBotAPI(authToken)
@@ -37,23 +41,25 @@ func NewTelegram(authToken string, torrentFilesPath string, torrentDataPath stri
 	config := telegram.configureAPI()
 
 	telegram.updates, err = telegram.bot.GetUpdatesChan(config)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
 	telegram.torrentFilesPath = torrentFilesPath
 
+	telegram.state = Constants.NO_STATE
+
 	return
 
 }
 
-func (telegram *Telegram) Start(){
+func (telegram *Telegram) Start() {
 
 	go telegram.sendNotification()
 
-	for update := range telegram.updates{ //update.Message.Chat.ID
+	for update := range telegram.updates { //update.Message.Chat.ID
 
-		if update.Message == nil{
+		if update.Message == nil {
 			continue
 		}
 
@@ -62,7 +68,7 @@ func (telegram *Telegram) Start(){
 
 }
 
-func (telegram *Telegram) handleUpdate(update tgbotapi.Update){
+func (telegram *Telegram) handleUpdate(update tgbotapi.Update) {
 
 	if update.Message.Chat.ID != Constants.BOT_OWNER_ID {
 
@@ -74,27 +80,40 @@ func (telegram *Telegram) handleUpdate(update tgbotapi.Update){
 
 		telegram.sendMessage(Constants.HELP_MESSAGE, update.Message.Chat.ID)
 
-	}else if update.Message.Command() == "checkTorrents" {
+	} else if update.Message.Command() == "checkTorrents" {
 
 		telegram.sendMessage(telegram.checkTorrents(), update.Message.Chat.ID)
 
-	}else if update.Message.Command() == "getFiles" {
+	} else if update.Message.Command() == "getFiles" {
 
 		telegram.sendMessage(telegram.getFiles(), update.Message.Chat.ID)
 
-	}else {
+	} else {
 
-		if update.Message.Document != nil {
+		if telegram.state == Constants.WAIT_FOR_FILES_TO_DOWNLOAD_STATE {
+
+			indexes := telegram.parseFilesIndexesMessage(update.Message.Text)
+
+			telegram.sendMessage(Constants.TORRENT_STARTED, update.Message.Chat.ID)
+
+			telegram.torrentDownloader.DownloadTorrent(indexes)
+
+		} else if update.Message.Document != nil {
 
 			filename, err := telegram.downloadFile(update.Message.Document.FileID)
 			if err != nil {
 				log.Println(err)
-			}else {
-				telegram.downloadTorrent(filename)
-				telegram.sendMessage(Constants.TORRENT_STARTED, update.Message.Chat.ID)
+			} else {
+
+				telegram.torrentDownloader.AddTorrent(filename)
+				telegram.sendMessage(Constants.PICK_FILES_TO_DOWNLOAD, update.Message.Chat.ID)
+				telegram.sendMessage(telegram.torrentDownloader.GetFilenamesFromTorrent(), update.Message.Chat.ID)
+
+				telegram.state = Constants.WAIT_FOR_FILES_TO_DOWNLOAD_STATE
+
 			}
 
-		}else {
+		} else {
 
 			telegram.sendMessage(Constants.UNKNOWN_COMMAND, update.Message.Chat.ID)
 
@@ -102,17 +121,37 @@ func (telegram *Telegram) handleUpdate(update tgbotapi.Update){
 
 	}
 
+}
+
+func (telegram *Telegram) parseFilesIndexesMessage(message string) []int {
+
+	ints := strings.Split(message, "\n")
+
+	result := make([]int, len(ints))
+
+	for i, n := range ints {
+
+		nn, err := strconv.Atoi(n)
+		if err != nil {
+			return []int{-1}
+		}
+
+		result[i] = nn
+
+	}
+
+	return result
 
 }
 
-func (telegram *Telegram) getFiles() string{
+func (telegram *Telegram) getFiles() string {
 
 	fileManager := FileManager.InitFileManager(telegram.torrentFilesPath)
 	dataArray := fileManager.GetListOfFiles()
 
 	result := ""
 
-	for _, data := range dataArray{
+	for _, data := range dataArray {
 
 		result += data.ToString()
 
@@ -126,7 +165,7 @@ func (telegram *Telegram) getFiles() string{
 
 }
 
-func (telegram *Telegram) sendNotification(){
+func (telegram *Telegram) sendNotification() {
 
 	finishedTorrents := make([]int, 1)
 	finishedTorrents[0] = -1
@@ -140,8 +179,8 @@ func (telegram *Telegram) sendNotification(){
 
 		for i, torr := range torrents {
 
-			for _, value := range finishedTorrents{
-				if i == value{
+			for _, value := range finishedTorrents {
+				if i == value {
 					breakCycle = true
 				}
 			}
@@ -163,15 +202,15 @@ func (telegram *Telegram) sendNotification(){
 
 }
 
-func (telegram *Telegram) addInfo(torrent *TorrentDownloader.Torrent){
+func (telegram *Telegram) addInfo(torrent *TorrentDownloader.Torrent) {
 
 	fileManager := FileManager.InitFileManager(telegram.torrentFilesPath)
 
 	data := FileManager.Data{
-		PathToSource : telegram.torrentFilesPath,
-		SizeOfSource : torrent.GetSize(),
-		Name : torrent.GetName(),
-		FileNames: torrent.GetFileNames(),
+		PathToSource: telegram.torrentFilesPath,
+		SizeOfSource: torrent.GetSize(),
+		Name:         torrent.GetName(),
+		FileNames:    torrent.GetFileNames(),
 	}
 
 	fileManager.Add(data)
@@ -179,20 +218,13 @@ func (telegram *Telegram) addInfo(torrent *TorrentDownloader.Torrent){
 
 }
 
-
 func (telegram *Telegram) checkTorrents() string {
 
 	return telegram.torrentDownloader.GetListOfTorrents()
 
 }
 
-func (telegram *Telegram) downloadTorrent(filename string){
-
-	telegram.torrentDownloader.DownloadTorrent(filename)
-
-}
-
-func (telegram *Telegram) downloadFile(documentID string) (string,error) {
+func (telegram *Telegram) downloadFile(documentID string) (string, error) {
 
 	fileConfig := tgbotapi.FileConfig{FileID: documentID}
 
@@ -206,7 +238,7 @@ func (telegram *Telegram) downloadFile(documentID string) (string,error) {
 	log.Println("Link : " + link)
 
 	filename, err := telegram.downloadFileFromLink(file.FilePath, link)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -214,23 +246,23 @@ func (telegram *Telegram) downloadFile(documentID string) (string,error) {
 
 }
 
-func (telegram *Telegram) downloadFileFromLink(filename, link string) (string, error){
+func (telegram *Telegram) downloadFileFromLink(filename, link string) (string, error) {
 
 	response, err := http.Get(link)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
 	log.Println("filename is " + telegram.torrentFilesPath + filename)
 	file, err := os.Create(telegram.torrentFilesPath + filename)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
 	log.Println(response.Status)
 
 	_, err = io.Copy(file, response.Body)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -241,7 +273,7 @@ func (telegram *Telegram) downloadFileFromLink(filename, link string) (string, e
 
 }
 
-func (telegram *Telegram) sendMessage(message string, id int64){
+func (telegram *Telegram) sendMessage(message string, id int64) {
 
 	log.Println("Send message to user with message : " + message + "id : " + string(id))
 
@@ -249,11 +281,11 @@ func (telegram *Telegram) sendMessage(message string, id int64){
 
 }
 
-func (telegram *Telegram) configureAPI() tgbotapi.UpdateConfig{
+func (telegram *Telegram) configureAPI() tgbotapi.UpdateConfig {
 
 	telegram.bot.Debug = false
-	config := tgbotapi.NewUpdate(0)//todo check in documentation for value
-	config.Timeout = 60 //todo check in documentation for value
+	config := tgbotapi.NewUpdate(0) //todo check in documentation for value
+	config.Timeout = 60             //todo check in documentation for value
 
 	return config //TODO configure this
 

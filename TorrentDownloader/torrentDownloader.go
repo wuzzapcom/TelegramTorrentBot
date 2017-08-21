@@ -9,7 +9,9 @@ import (
 )
 
 type TorrentDownloader struct {
-	client *torrent.Client
+	client         *torrent.Client
+	currentTorrent *torrent.Torrent //TODO in next version add array of torrents for simultaneous work with few torrents
+
 }
 
 func NewTorrentDownloader(torrentDataPath string) (torrentDownloader *TorrentDownloader, err error) {
@@ -36,27 +38,55 @@ func (torrentDownloader *TorrentDownloader) GetTorrents() (torrents []*Torrent) 
 
 }
 
-func (torrentDownloader *TorrentDownloader) DownloadTorrent(path string) {
+func (torrentDownloader *TorrentDownloader) GetFilenamesFromTorrent() string {
 
-	t := torrentDownloader.addTorrent(path)
+	torrent := NewTorrent(torrentDownloader.currentTorrent)
 
-	for _, file := range t.Files() {
+	torrentNames := torrent.GetFileNames()
 
-		file.Download()
+	result := ""
+
+	for _, name := range torrentNames {
+
+		result += name + "\n"
+
+	}
+
+	return result
+
+}
+
+func (torrentDownloader *TorrentDownloader) DownloadTorrent(downloadFilesIndexes []int) {
+
+	if len(downloadFilesIndexes) == -1 && downloadFilesIndexes[0] == -1 {
+		torrentDownloader.currentTorrent.DownloadAll()
+	}
+
+	for i, file := range torrentDownloader.currentTorrent.Files() {
+
+		for _, j := range downloadFilesIndexes {
+
+			if i == j {
+
+				file.Download()
+
+			}
+
+		}
 
 	}
 
 }
 
-func (torrentDownloader *TorrentDownloader) addTorrent(path string) (t *torrent.Torrent) {
+func (torrentDownloader *TorrentDownloader) AddTorrent(path string) {
 
 	t, err := torrentDownloader.client.AddTorrentFromFile(path)
 	if err != nil {
 		fmt.Println(err)
-		return nil
+		torrentDownloader.currentTorrent = nil
 	}
 
-	return
+	torrentDownloader.currentTorrent = t
 
 }
 

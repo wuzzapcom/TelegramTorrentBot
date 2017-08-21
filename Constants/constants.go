@@ -8,16 +8,22 @@ const FILE_DOWNLOADED_1 = "Торрент "
 const FILE_DOWNLOADED_2 = " скачался!"
 const TORRENT_STARTED = "Торрент начал скачиваться!"
 const NO_FILES_DOWNLOADED = "Вы пока не скачали ни один торрент."
-const BOT_OWNER_ID =  36187514
+const PICK_FILES_TO_DOWNLOAD = "Выберите файлы, которые стоит скачать. Вводите номера файлов цифрами, каждая цифра - новая строка. Если нужно скачать все файлы, то введите одно число -1. Нумерация с нуля."
+const BOT_OWNER_ID = 36187514
 
 const INFO_FILE_NAME = ".TelegramTorrentBotInfo"
 
+const (
+	WAIT_FOR_FILES_TO_DOWNLOAD_STATE = iota
+	NO_STATE
+)
+
 /*
+	TODO
 
-	1) Finish FileManager
-		* FileManager should show all subfiles, such as tv series episodes
-	2) Implement FileManager in main project
-	3) Don`t call DownloadAll function in TorrentDownloader, but download all files consistently(for convenient downloading tv series)
-	4) Send message to user about every downloaded file/episode (optional, user should set this as flag manually)
+	1) Update broke notifications when not all torrent downloaded(why am i use notification func?)
+	2) /getFiles shows all files from torrent, but not just downloaded files
+	3) TEST THIS
+	4) TODO from torrentDownloader
 
- */
+*/
