@@ -6,6 +6,7 @@ import (
 	"log"
 	"encoding/json"
 	"os"
+	"strconv"
 )
 
 type FileManager struct{
@@ -25,9 +26,24 @@ type Data struct{
 
 	PathToSource string //may be file or folder
 	SizeOfSource int64
-	DownloadDate int64
 	Name string
 	FileNames []string
+
+}
+
+func (data *Data) ToString() string{
+
+	result := data.Name + "\n"
+
+	result += "    Size : " + strconv.FormatInt(data.SizeOfSource, 10) + "\n"
+
+	for _, name := range data.FileNames{
+
+		result += "    " + name + "\n"
+
+	}
+
+	return result
 
 }
 

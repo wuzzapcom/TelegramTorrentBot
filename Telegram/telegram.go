@@ -9,6 +9,7 @@ import (
 	"io"
 	"wuzzapcom/TelegramTorrentBot/Constants"
 	"time"
+	"wuzzapcom/TelegramTorrentBot/FileManager"
 )
 
 type Telegram struct{
@@ -77,6 +78,10 @@ func (telegram *Telegram) handleUpdate(update tgbotapi.Update){
 
 		telegram.sendMessage(telegram.checkTorrents(), update.Message.Chat.ID)
 
+	}else if update.Message.Command() == "getFiles" {
+
+		telegram.sendMessage(telegram.getFiles(), update.Message.Chat.ID)
+
 	}else {
 
 		if update.Message.Document != nil {
@@ -97,6 +102,23 @@ func (telegram *Telegram) handleUpdate(update tgbotapi.Update){
 
 	}
 
+
+}
+
+func (telegram *Telegram) getFiles() string{
+
+	fileManager := FileManager.InitFileManager(telegram.torrentFilesPath)
+	dataArray := fileManager.GetListOfFiles()
+
+	result := ""
+
+	for _, data := range dataArray{
+
+		result += data.ToString()
+
+	}
+
+	return result
 
 }
 
@@ -122,6 +144,8 @@ func (telegram *Telegram) sendNotification(){
 
 			if torr.IsDownloaded() && !breakCycle {
 
+				telegram.addInfo(torr)
+
 				telegram.sendMessage(Constants.FILE_DOWNLOADED_1+torr.GetName()+Constants.FILE_DOWNLOADED_2, Constants.BOT_OWNER_ID)
 				finishedTorrents = append(finishedTorrents, i)
 
@@ -132,6 +156,22 @@ func (telegram *Telegram) sendNotification(){
 		time.Sleep(time.Second)
 
 	}
+
+}
+
+func (telegram *Telegram) addInfo(torrent *TorrentDownloader.Torrent){
+
+	fileManager := FileManager.InitFileManager(telegram.torrentFilesPath)
+
+	data := FileManager.Data{
+		PathToSource : telegram.torrentFilesPath,
+		SizeOfSource : torrent.GetSize(),
+		Name : torrent.GetName(),
+		FileNames: torrent.GetFilenames(),
+	}
+
+	fileManager.Add(data)
+	fileManager.Save()
 
 }
 

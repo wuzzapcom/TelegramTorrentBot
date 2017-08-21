@@ -9,13 +9,12 @@ import (
 
 func TestFileManager(t *testing.T){
 
-	dataString := "{\"Data\":[{\"PathToSource\":\"/home\",\"SizeOfSource\":999,\"DownloadDate\":532145,\"Name\":\"Test1\",\"FileNames\":[\"File1\",\"File2\",\"File3\"]}]}"
+	dataString := "{\"Data\":[{\"PathToSource\":\"/home\",\"SizeOfSource\":999,\"Name\":\"Test1\",\"FileNames\":[\"File1\",\"File2\",\"File3\"]}]}"
 
 	fileManager := InitFileManager("/home/wuzzapcom/Coding/Golang/src/wuzzapcom/TelegramTorrentBot")
 	data := Data{
 		PathToSource:"/home",
 		SizeOfSource:999,
-		DownloadDate:532145,
 		Name: "Test1",
 		FileNames:[]string{"File1", "File2", "File3"}}
 

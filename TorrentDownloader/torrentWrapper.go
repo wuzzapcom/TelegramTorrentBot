@@ -41,6 +41,27 @@ func (t *Torrent) GetProgress() float64{
 
 }
 
+func (t *Torrent) GetSize() int64{
+
+	return t.t.Length()
+
+}
+
+func (t *Torrent) GetFilenames() []string{
+
+	files := t.t.Files()
+	res := make([]string, 0, len(files))
+
+	for _, file := range files {
+
+		res = append(res, file.Torrent().Name())
+
+	}
+
+	return res
+
+}
+
 func (t *Torrent) GetDownloadSpeed() float64{
 
 	startValue := t.t.BytesCompleted()
