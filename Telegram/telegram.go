@@ -118,6 +118,10 @@ func (telegram *Telegram) getFiles() string{
 
 	}
 
+	if result == "" {
+		return Constants.NO_FILES_DOWNLOADED
+	}
+
 	return result
 
 }
@@ -167,7 +171,7 @@ func (telegram *Telegram) addInfo(torrent *TorrentDownloader.Torrent){
 		PathToSource : telegram.torrentFilesPath,
 		SizeOfSource : torrent.GetSize(),
 		Name : torrent.GetName(),
-		FileNames: torrent.GetFilenames(),
+		FileNames: torrent.GetFileNames(),
 	}
 
 	fileManager.Add(data)

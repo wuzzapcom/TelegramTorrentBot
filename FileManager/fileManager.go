@@ -35,7 +35,7 @@ func (data *Data) ToString() string{
 
 	result := data.Name + "\n"
 
-	result += "    Size : " + strconv.FormatInt(data.SizeOfSource, 10) + "\n"
+	result += "    Size : " + strconv.FormatFloat((float64(data.SizeOfSource / 1024) / 1024) / 1024, 'f', 2, 64) + "GB \n"
 
 	for _, name := range data.FileNames{
 
@@ -49,7 +49,7 @@ func (data *Data) ToString() string{
 
 func InitFileManager(pathToData string) FileManager {
 
-	data, err := ioutil.ReadFile(pathToData + "/" + Constants.INFO_FILE_NAME)
+	data, err := ioutil.ReadFile(pathToData + Constants.INFO_FILE_NAME)
 	if err != nil{
 		log.Println(err)
 		return FileManager{pathToData:pathToData, loadedData: DataArray{Data:make([]Data, 0, 5)}}
@@ -76,12 +76,12 @@ func (fileManager *FileManager) Save() {
 		log.Panic(err)
 	}
 
-	err = os.Remove(fileManager.pathToData + "/" + Constants.INFO_FILE_NAME)
+	err = os.Remove(fileManager.pathToData + Constants.INFO_FILE_NAME)
 	if err != nil {
 		log.Println(err)
 	}
 
-	file, err := os.Create(fileManager.pathToData + "/" + Constants.INFO_FILE_NAME)
+	file, err := os.Create(fileManager.pathToData + Constants.INFO_FILE_NAME)
 	if err != nil{
 		log.Panic(err)
 	}

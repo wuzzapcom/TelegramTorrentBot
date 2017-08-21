@@ -3,6 +3,8 @@ package TorrentDownloader
 import (
 	"github.com/anacrolix/torrent"
 	"time"
+	"strings"
+	"log"
 )
 
 type Torrent struct{
@@ -47,18 +49,25 @@ func (t *Torrent) GetSize() int64{
 
 }
 
-func (t *Torrent) GetFilenames() []string{
+func (t *Torrent) GetFileNames() []string{
 
-	files := t.t.Files()
-	res := make([]string, 0, len(files))
+	result := make([]string, 0, len(t.t.Files()))
 
-	for _, file := range files {
+	for _, file := range t.t.Files(){
 
-		res = append(res, file.Torrent().Name())
+		index := strings.Index(file.Path(), "/")
+
+		if index > -1 {
+
+			result = append(result, file.Path()[index+1:])
+
+		} else{
+			log.Panic("GetFileNames(); Index is -1")
+		}
 
 	}
 
-	return res
+	return result
 
 }
 

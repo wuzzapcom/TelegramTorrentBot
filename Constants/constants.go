@@ -7,6 +7,7 @@ const NO_TORRENTS_DOWNLOADING = "У вас нет ни одного торрен
 const FILE_DOWNLOADED_1 = "Торрент "
 const FILE_DOWNLOADED_2 = " скачался!"
 const TORRENT_STARTED = "Торрент начал скачиваться!"
+const NO_FILES_DOWNLOADED = "Вы пока не скачали ни один торрент."
 const BOT_OWNER_ID =  36187514
 
 const INFO_FILE_NAME = ".TelegramTorrentBotInfo"
