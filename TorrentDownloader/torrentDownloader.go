@@ -1,16 +1,15 @@
 package TorrentDownloader
 
 import (
-	"github.com/anacrolix/torrent"
 	"fmt"
 	"strconv"
 	"wuzzapcom/TelegramTorrentBot/Constants"
+
+	"github.com/anacrolix/torrent"
 )
 
-type TorrentDownloader struct{
-
+type TorrentDownloader struct {
 	client *torrent.Client
-
 }
 
 func NewTorrentDownloader(torrentDataPath string) (torrentDownloader *TorrentDownloader, err error) {
@@ -21,7 +20,7 @@ func NewTorrentDownloader(torrentDataPath string) (torrentDownloader *TorrentDow
 	config.DataDir = torrentDataPath
 
 	torrentDownloader.client, err = torrent.NewClient(config)
-	if err != nil{
+	if err != nil {
 		fmt.Println(err)
 	}
 
@@ -37,18 +36,22 @@ func (torrentDownloader *TorrentDownloader) GetTorrents() (torrents []*Torrent) 
 
 }
 
-func (torrentDownloader *TorrentDownloader) DownloadTorrent(path string){
+func (torrentDownloader *TorrentDownloader) DownloadTorrent(path string) {
 
 	t := torrentDownloader.addTorrent(path)
 
-	t.DownloadAll()
+	for _, file := range t.Files() {
+
+		file.Download()
+
+	}
 
 }
 
 func (torrentDownloader *TorrentDownloader) addTorrent(path string) (t *torrent.Torrent) {
 
 	t, err := torrentDownloader.client.AddTorrentFromFile(path)
-	if err != nil{
+	if err != nil {
 		fmt.Println(err)
 		return nil
 	}
@@ -61,13 +64,13 @@ func (torrentDownloader *TorrentDownloader) GetListOfTorrents() (result string) 
 
 	torrents := torrentDownloader.GetTorrents()
 
-	if len(torrents) == 0{
+	if len(torrents) == 0 {
 		return Constants.NO_TORRENTS_DOWNLOADING
 	}
 
-	for i, torr := range torrents{
+	for i, torr := range torrents {
 
-		if torr.IsDownloaded(){
+		if torr.IsDownloaded() {
 			continue
 		}
 
@@ -79,7 +82,6 @@ func (torrentDownloader *TorrentDownloader) GetListOfTorrents() (result string) 
 
 }
 
-func (torrentDownloader *TorrentDownloader) Close(){
+func (torrentDownloader *TorrentDownloader) Close() {
 	torrentDownloader.client.Close()
 }
-
