@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 	"wuzzapcom/TelegramTorrentBot/Constants"
 	"wuzzapcom/TelegramTorrentBot/FileManager"
 	"wuzzapcom/TelegramTorrentBot/TorrentDownloader"
@@ -55,7 +54,7 @@ func NewTelegram(authToken string, torrentFilesPath string, torrentDataPath stri
 
 func (telegram *Telegram) Start() {
 
-	go telegram.sendNotification()
+	// go telegram.sendNotification()
 
 	for update := range telegram.updates { //update.Message.Chat.ID
 
@@ -97,6 +96,9 @@ func (telegram *Telegram) handleUpdate(update tgbotapi.Update) {
 			telegram.sendMessage(Constants.TORRENT_STARTED, update.Message.Chat.ID)
 
 			telegram.torrentDownloader.DownloadTorrent(indexes)
+
+			telegram.addInfo(telegram.torrentDownloader.GetCurrentTorrent())
+			telegram.sendMessage(Constants.FILE_DOWNLOADED_1+telegram.torrentDownloader.GetCurrentTorrent().GetName()+Constants.FILE_DOWNLOADED_2, update.Message.Chat.ID)
 
 		} else if update.Message.Document != nil {
 
@@ -162,43 +164,6 @@ func (telegram *Telegram) getFiles() string {
 	}
 
 	return result
-
-}
-
-func (telegram *Telegram) sendNotification() {
-
-	finishedTorrents := make([]int, 1)
-	finishedTorrents[0] = -1
-	breakCycle := false
-
-	for {
-
-		torrents := telegram.torrentDownloader.GetTorrents()
-
-		breakCycle = false
-
-		for i, torr := range torrents {
-
-			for _, value := range finishedTorrents {
-				if i == value {
-					breakCycle = true
-				}
-			}
-
-			if torr.IsDownloaded() && !breakCycle {
-
-				telegram.addInfo(torr)
-
-				telegram.sendMessage(Constants.FILE_DOWNLOADED_1+torr.GetName()+Constants.FILE_DOWNLOADED_2, Constants.BOT_OWNER_ID)
-				finishedTorrents = append(finishedTorrents, i)
-
-			}
-
-		}
-
-		time.Sleep(time.Second)
-
-	}
 
 }
 

@@ -30,6 +30,12 @@ func NewTorrentDownloader(torrentDataPath string) (torrentDownloader *TorrentDow
 
 }
 
+func (torrentDownloader *TorrentDownloader) GetCurrentTorrent() *Torrent {
+
+	return NewTorrent(torrentDownloader.currentTorrent)
+
+}
+
 func (torrentDownloader *TorrentDownloader) GetTorrents() (torrents []*Torrent) {
 
 	torrents = NewTorrents(torrentDownloader.client.Torrents())
