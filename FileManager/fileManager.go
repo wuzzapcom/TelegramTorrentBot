@@ -1,45 +1,52 @@
 package FileManager
 
 import (
-	"io/ioutil"
-	"wuzzapcom/TelegramTorrentBot/Constants"
-	"log"
 	"encoding/json"
+	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
+	"wuzzapcom/TelegramTorrentBot/Constants"
 )
 
-type FileManager struct{
-
+type FileManager struct {
 	pathToData string
 	loadedData DataArray
-
 }
 
-type DataArray struct{
-
+type DataArray struct {
 	Data []Data
-
 }
 
-type Data struct{
-
+type Data struct {
 	PathToSource string //may be file or folder
 	SizeOfSource int64
-	Name string
-	FileNames []string
-
+	Name         string
+	FileNames    []Pair
 }
 
-func (data *Data) ToString() string{
+type Pair struct {
+	S string
+	B bool
+}
+
+func (data *Data) ToString() string {
 
 	result := data.Name + "\n"
 
-	result += "    Size : " + strconv.FormatFloat((float64(data.SizeOfSource / 1024) / 1024) / 1024, 'f', 2, 64) + "GB \n"
+	result += "    Size : " + strconv.FormatFloat((float64(data.SizeOfSource/1024)/1024)/1024, 'f', 2, 64) + "GB \n"
 
-	for _, name := range data.FileNames{
+	for _, name := range data.FileNames {
 
-		result += "    " + name + "\n"
+		var ending string
+
+		if name.B {
+			ending = " OK\n"
+		} else {
+			ending = "\n"
+		}
+
+		result += "    " + name.S + ending
 
 	}
 
@@ -50,9 +57,9 @@ func (data *Data) ToString() string{
 func InitFileManager(pathToData string) FileManager {
 
 	data, err := ioutil.ReadFile(pathToData + Constants.INFO_FILE_NAME)
-	if err != nil{
+	if err != nil {
 		log.Println(err)
-		return FileManager{pathToData:pathToData, loadedData: DataArray{Data:make([]Data, 0, 5)}}
+		return FileManager{pathToData: pathToData, loadedData: DataArray{Data: make([]Data, 0, 5)}}
 	}
 
 	var dataArray DataArray
@@ -63,7 +70,7 @@ func InitFileManager(pathToData string) FileManager {
 
 }
 
-func (fileManager *FileManager) GetListOfFiles() []Data{
+func (fileManager *FileManager) GetListOfFiles() []Data {
 
 	return fileManager.loadedData.Data
 
@@ -72,7 +79,7 @@ func (fileManager *FileManager) GetListOfFiles() []Data{
 func (fileManager *FileManager) Save() {
 
 	data, err := json.Marshal(fileManager.loadedData)
-	if err != nil{
+	if err != nil {
 		log.Panic(err)
 	}
 
@@ -82,7 +89,7 @@ func (fileManager *FileManager) Save() {
 	}
 
 	file, err := os.Create(fileManager.pathToData + Constants.INFO_FILE_NAME)
-	if err != nil{
+	if err != nil {
 		log.Panic(err)
 	}
 
@@ -91,15 +98,14 @@ func (fileManager *FileManager) Save() {
 
 }
 
-func (dataArray *DataArray) Add(data Data){
+func (dataArray *DataArray) Add(data Data) {
 
 	dataArray.Data = append(dataArray.Data, data)
 
 }
 
-func (fileManager *FileManager) Add(data Data){
+func (fileManager *FileManager) Add(data Data) {
 
 	fileManager.loadedData.Add(data)
 
 }
-

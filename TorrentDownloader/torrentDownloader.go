@@ -44,17 +44,17 @@ func (torrentDownloader *TorrentDownloader) GetTorrents() (torrents []*Torrent) 
 
 }
 
-func (torrentDownloader *TorrentDownloader) GetFilenamesFromTorrent() string {
+func (torrentDownloader *TorrentDownloader) GetFilenamesFromTorrent(pathToTorrents string) string {
 
 	torrent := NewTorrent(torrentDownloader.currentTorrent)
 
-	torrentNames := torrent.GetFileNames()
+	torrentNames := torrent.GetFileNames(pathToTorrents, []int{})
 
 	result := ""
 
 	for _, name := range torrentNames {
 
-		result += name + "\n"
+		result += name.S + "\n"
 
 	}
 

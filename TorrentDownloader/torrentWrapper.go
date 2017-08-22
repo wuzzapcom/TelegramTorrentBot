@@ -1,19 +1,19 @@
 package TorrentDownloader
 
 import (
-	"github.com/anacrolix/torrent"
-	"time"
-	"strings"
 	"log"
+	"strings"
+	"time"
+	"wuzzapcom/TelegramTorrentBot/FileManager"
+
+	"github.com/anacrolix/torrent"
 )
 
-type Torrent struct{
-
+type Torrent struct {
 	t *torrent.Torrent
-
 }
 
-func NewTorrent(torr *torrent.Torrent) (t *Torrent){
+func NewTorrent(torr *torrent.Torrent) (t *Torrent) {
 
 	t = &Torrent{}
 
@@ -23,7 +23,7 @@ func NewTorrent(torr *torrent.Torrent) (t *Torrent){
 
 }
 
-func NewTorrents(torrents []*torrent.Torrent) (t []*Torrent){
+func NewTorrents(torrents []*torrent.Torrent) (t []*Torrent) {
 
 	t = make([](*Torrent), len(torrents))
 
@@ -37,31 +37,40 @@ func NewTorrents(torrents []*torrent.Torrent) (t []*Torrent){
 
 }
 
-func (t *Torrent) GetProgress() float64{
+func (t *Torrent) GetProgress() float64 {
 
 	return float64(t.t.BytesCompleted()) / float64(t.t.Length()) * 100
 
 }
 
-func (t *Torrent) GetSize() int64{
+func (t *Torrent) GetSize() int64 {
 
 	return t.t.Length()
 
 }
 
-func (t *Torrent) GetFileNames() []string{
+func (t *Torrent) GetFileNames(pathToTorrents string, indexes []int) []FileManager.Pair {
 
-	result := make([]string, 0, len(t.t.Files()))
+	result := make([]FileManager.Pair, len(t.t.Files()))
 
-	for _, file := range t.t.Files(){
+	for i, file := range t.t.Files() {
+
+		isDownloaded := false
+
+		for _, j := range indexes {
+			if i == j {
+				isDownloaded = true
+			}
+		}
 
 		index := strings.Index(file.Path(), "/")
 
 		if index > -1 {
 
-			result = append(result, file.Path()[index+1:])
+			result[i] = FileManager.Pair{S: file.Path()[index+1:], B: isDownloaded}
+			// result = append(result, file.Path()[index+1:])
 
-		} else{
+		} else {
 			log.Panic("GetFileNames(); Index is -1")
 		}
 
@@ -71,7 +80,7 @@ func (t *Torrent) GetFileNames() []string{
 
 }
 
-func (t *Torrent) GetDownloadSpeed() float64{
+func (t *Torrent) GetDownloadSpeed() float64 {
 
 	startValue := t.t.BytesCompleted()
 
@@ -83,14 +92,13 @@ func (t *Torrent) GetDownloadSpeed() float64{
 
 	delta = delta / 1024
 
-	return  float64(delta) / 1024
+	return float64(delta) / 1024
 
 }
 
-
 func (t *Torrent) IsDownloaded() bool {
 
-	return  t.t.BytesCompleted() == t.t.Length()
+	return t.t.BytesCompleted() == t.t.Length()
 
 }
 

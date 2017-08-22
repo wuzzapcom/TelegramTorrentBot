@@ -97,8 +97,10 @@ func (telegram *Telegram) handleUpdate(update tgbotapi.Update) {
 
 			telegram.torrentDownloader.DownloadTorrent(indexes)
 
-			telegram.addInfo(telegram.torrentDownloader.GetCurrentTorrent())
+			telegram.addInfo(telegram.torrentDownloader.GetCurrentTorrent(), indexes)
 			telegram.sendMessage(Constants.FILE_DOWNLOADED_1+telegram.torrentDownloader.GetCurrentTorrent().GetName()+Constants.FILE_DOWNLOADED_2, update.Message.Chat.ID)
+
+			telegram.state = Constants.NO_STATE
 
 		} else if update.Message.Document != nil {
 
@@ -109,7 +111,7 @@ func (telegram *Telegram) handleUpdate(update tgbotapi.Update) {
 
 				telegram.torrentDownloader.AddTorrent(filename)
 				telegram.sendMessage(Constants.PICK_FILES_TO_DOWNLOAD, update.Message.Chat.ID)
-				telegram.sendMessage(telegram.torrentDownloader.GetFilenamesFromTorrent(), update.Message.Chat.ID)
+				telegram.sendMessage(telegram.torrentDownloader.GetFilenamesFromTorrent(telegram.torrentFilesPath), update.Message.Chat.ID)
 
 				telegram.state = Constants.WAIT_FOR_FILES_TO_DOWNLOAD_STATE
 
@@ -167,7 +169,7 @@ func (telegram *Telegram) getFiles() string {
 
 }
 
-func (telegram *Telegram) addInfo(torrent *TorrentDownloader.Torrent) {
+func (telegram *Telegram) addInfo(torrent *TorrentDownloader.Torrent, indexes []int) {
 
 	fileManager := FileManager.InitFileManager(telegram.torrentFilesPath)
 
@@ -175,7 +177,7 @@ func (telegram *Telegram) addInfo(torrent *TorrentDownloader.Torrent) {
 		PathToSource: telegram.torrentFilesPath,
 		SizeOfSource: torrent.GetSize(),
 		Name:         torrent.GetName(),
-		FileNames:    torrent.GetFileNames(),
+		FileNames:    torrent.GetFileNames(telegram.torrentFilesPath, indexes),
 	}
 
 	fileManager.Add(data)
