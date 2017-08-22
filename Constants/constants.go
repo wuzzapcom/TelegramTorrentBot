@@ -21,9 +21,8 @@ const (
 /*
 	TODO
 
-	1) Update broke notifications when not all torrent downloaded(why am i use notification func?)
-	2) /getFiles shows all files from torrent, but not just downloaded files
-	3) TEST THIS
-	4) TODO from torrentDownloader
+	1) Add way to finish downloading files
+	2) Add emoji for visibility
+	3) TODO from torrentDownloader : add array of torrents for simultaneous work with few torrents
 
 */
