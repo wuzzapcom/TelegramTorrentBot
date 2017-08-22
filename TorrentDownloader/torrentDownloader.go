@@ -64,15 +64,17 @@ func (torrentDownloader *TorrentDownloader) GetFilenamesFromTorrent(pathToTorren
 
 func (torrentDownloader *TorrentDownloader) DownloadTorrent(downloadFilesIndexes []int) {
 
-	if len(downloadFilesIndexes) == -1 && downloadFilesIndexes[0] == -1 {
-		torrentDownloader.currentTorrent.DownloadAll()
+	isDownloadAll := false
+
+	if len(downloadFilesIndexes) == 1 && downloadFilesIndexes[0] == -1 {
+		isDownloadAll = true
 	}
 
 	for i, file := range torrentDownloader.currentTorrent.Files() {
 
 		for _, j := range downloadFilesIndexes {
 
-			if i == j {
+			if i == j || isDownloadAll {
 
 				file.Download()
 

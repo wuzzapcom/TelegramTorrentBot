@@ -21,6 +21,7 @@ const (
 /*
 	TODO
 
+	0) FIX BUG WITH FINISH NOTIFICATION : return func in separate goroutine, keep information about number of bytes torrent should download and compare with it, not with all bytes of torrent
 	1) Add way to finish downloading files
 	2) Add emoji for visibility
 	3) TODO from torrentDownloader : add array of torrents for simultaneous work with few torrents

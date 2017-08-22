@@ -55,7 +55,7 @@ func (t *Torrent) GetFileNames(pathToTorrents string, indexes []int) []FileManag
 
 	for i, file := range t.t.Files() {
 
-		isDownloaded := false
+		isDownloaded := (len(indexes) == 1 && indexes[0] == -1)
 
 		for _, j := range indexes {
 			if i == j {
