@@ -1,5 +1,5 @@
 # TelegramTorrentBot
-https://travis-ci.org/wuzzapcom/TelegramTorrentBot.svg?branch=master  
+[![Build Status](https://travis-ci.org/wuzzapcom/TelegramTorrentBot.svg?branch=master)](https://travis-ci.org/wuzzapcom/TelegramTorrentBot)   
 Telegram bot which downloads files and notify you about it.  
 
 To start :   
