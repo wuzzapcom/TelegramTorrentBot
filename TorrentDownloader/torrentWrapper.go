@@ -4,7 +4,7 @@ import (
 	"log"
 	"strings"
 	"time"
-	"wuzzapcom.io/TelegramTorrentBot/FileManager"
+	"github.com/wuzzapcom/TelegramTorrentBot/FileManager"
 
 	"github.com/anacrolix/torrent"
 )

@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"wuzzapcom.io/TelegramTorrentBot/Constants"
+
+	"github.com/wuzzapcom/TelegramTorrentBot/Constants"
 )
 
 type FileManager struct {

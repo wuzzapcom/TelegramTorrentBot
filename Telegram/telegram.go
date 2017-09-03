@@ -7,9 +7,9 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"wuzzapcom.io/TelegramTorrentBot/Constants"
-	"wuzzapcom.io/TelegramTorrentBot/FileManager"
-	"wuzzapcom.io/TelegramTorrentBot/TorrentDownloader"
+	"github.com/wuzzapcom/TelegramTorrentBot/Constants"
+	"github.com/wuzzapcom/TelegramTorrentBot/FileManager"
+	"github.com/wuzzapcom/TelegramTorrentBot/TorrentDownloader"
 
 	"github.com/Syfaro/telegram-bot-api"
 )

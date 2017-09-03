@@ -3,7 +3,7 @@ package TorrentDownloader
 import (
 	"fmt"
 	"strconv"
-	"wuzzapcom.io/TelegramTorrentBot/Constants"
+	"github.com/wuzzapcom/TelegramTorrentBot/Constants"
 
 	"github.com/anacrolix/torrent"
 )

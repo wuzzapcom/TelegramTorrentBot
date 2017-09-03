@@ -8,7 +8,7 @@ func TestFileManager(t *testing.T) {
 
 	// dataString := "{\"Data\":[{\"PathToSource\":\"/home\",\"SizeOfSource\":999,\"Name\":\"Test1\",\"FileNames\":[\"File1\",\"File2\",\"File3\"]}]}"
 	//
-	// fileManager := InitFileManager("/home/wuzzapcom/Coding/Golang/src/wuzzapcom.io/TelegramTorrentBot")
+	// fileManager := InitFileManager("/home/wuzzapcom/Coding/Golang/src/github.com/wuzzapcom/TelegramTorrentBot")
 	// data := Data{
 	// 	PathToSource:"/home",
 	// 	SizeOfSource:999,
@@ -24,7 +24,7 @@ func TestFileManager(t *testing.T) {
 	//
 	// fileManager.Save()
 	//
-	// b, err := ioutil.ReadFile("/home/wuzzapcom/Coding/Golang/src/wuzzapcom.io/TelegramTorrentBot/.TelegramTorrentBotInfo")
+	// b, err := ioutil.ReadFile("/home/wuzzapcom/Coding/Golang/src/github.com/wuzzapcom/TelegramTorrentBot/.TelegramTorrentBotInfo")
 	// if err != nil{
 	// 	t.Error("Failed to read .TelegramTorrentBotInfo\n", err)
 	// }
@@ -33,6 +33,6 @@ func TestFileManager(t *testing.T) {
 	// 	t.Error("Readed .TelegramTorrentBotInfo contains wrong data . Expected : " + dataString + "got : " + string(b))
 	// }
 	//
-	// os.Remove("/home/wuzzapcom/Coding/Golang/src/wuzzapcom.io/TelegramTorrentBot/.TelegramTorrentBotInfo")
+	// os.Remove("/home/wuzzapcom/Coding/Golang/src/github.com/wuzzapcom/TelegramTorrentBot/.TelegramTorrentBotInfo")
 
 }

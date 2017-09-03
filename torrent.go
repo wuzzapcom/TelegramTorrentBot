@@ -1,7 +1,7 @@
 package main
 
 import (
-	"wuzzapcom.io/TelegramTorrentBot/Telegram"
+	"github.com/wuzzapcom/TelegramTorrentBot/Telegram"
 	"log"
 	"io/ioutil"
 	"os"
