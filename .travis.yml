@@ -1,0 +1,8 @@
+language: go
+
+before_install:
+  - go get -v github.com/Syfaro/telegram-bot-api
+  - go get -v github.com/anacrolix/torrent
+
+script:
+  - go test FileManager/fileManager_test.go
