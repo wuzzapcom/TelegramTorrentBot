@@ -4,5 +4,7 @@ before_install:
   - go get -v github.com/Syfaro/telegram-bot-api
   - go get -v github.com/anacrolix/torrent
 
+go_import_path: src/wuzzapcom/TelegramTorrentBot 
+
 script:
   - go test FileManager/fileManager_test.go
