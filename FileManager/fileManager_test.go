@@ -12,6 +12,7 @@ func TestFileManager(t *testing.T) {
 	dataString := "{\"Data\":[{\"PathToSource\":\"/home\",\"SizeOfSource\":999,\"Name\":\"Test1\",\"FileNames\":[{\"S\":\"File1\",\"B\":false},{\"S\":\"File2\",\"B\":true},{\"S\":\"File3\",\"B\":false}]}]}"
 
 	gopath := os.Getenv("GOPATH")
+	t.Log("Gopath is ", gopath)
 
 	fileManager := InitFileManager(gopath + "/src/github.com/wuzzapcom/TelegramTorrentBot/")
 	data := Data{
